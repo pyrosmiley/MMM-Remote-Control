@@ -589,7 +589,20 @@ module.exports = NodeHelper.create({
 					});
 					return;
 				}
-				if (res) { res.send({"status": "error", "reason": "unknown", "info": error}); }
+				
+				//For use with 'node serveronly' installations
+				if (res) { 
+					if (stdout.indexOf(" serveronly ") > -1)
+					{
+						exec("pkill -f "node serveronly"");
+						exec("node serveronly &");
+						setTimeout(function () {
+						  exec("wget http://192.168.1.35:8080/remote?action=REFRESH")
+						}, 8000);
+						
+						res.send({"status": "error", "reason": "unknown", "info": error}); 
+					}	
+				}
 			});
 			return true;
 		}
